@@ -40,3 +40,26 @@ export const ThreadRequestSchema = z.object({
   message: UniversalMessageSchema,
 });
 export type ThreadRequest = z.infer<typeof ThreadRequestSchema>;
+
+// Feedback schemas
+export const FeedbackSchema = z.object({
+  id: z.number().optional(),
+  feedbackId: z.string().uuid(),
+  entryId: z.string().uuid(),
+  threadId: z.string().uuid(),
+  userId: z.string(),
+  rating: z.enum(["thumbs_up", "thumbs_down"]),
+  comment: z.string().optional(),
+  createdAt: z.string().datetime(),
+});
+export type Feedback = z.infer<typeof FeedbackSchema>;
+
+// Request payload for POST /feedback
+export const FeedbackRequestSchema = z.object({
+  entryId: z.string().uuid(),
+  threadId: z.string().uuid(),
+  userId: z.string(),
+  rating: z.enum(["thumbs_up", "thumbs_down"]),
+  comment: z.string().optional(),
+});
+export type FeedbackRequest = z.infer<typeof FeedbackRequestSchema>;

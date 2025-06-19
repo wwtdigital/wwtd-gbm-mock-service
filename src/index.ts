@@ -1,11 +1,23 @@
 import express from "express";
 import { z } from "zod";
 import { v4 as uuid } from "uuid";
-import { appendToThread, createThread, getThread, listThreads } from "./store.js";
+import { 
+  appendToThread, 
+  createThread, 
+  getThread, 
+  listThreads,
+  createFeedback,
+  getFeedback,
+  getFeedbackByEntry,
+  getFeedbackByThread,
+  listFeedback,
+} from "./store.js";
 import {
   type ThreadRequest,
   ThreadRequestSchema,
   ThreadSchema,
+  type FeedbackRequest,
+  FeedbackRequestSchema,
 } from "./types.js";
 import { formatThread } from "./utils.js";
 
@@ -76,6 +88,95 @@ app.get("/threads/:id", (req, res) => {
     return res.status(404).json({ error: "Thread not found" });
   }
   return res.json(formatThread(thread));
+});
+
+// Create feedback for an entry
+app.post("/feedback", (req, res) => {
+  const parse = FeedbackRequestSchema.safeParse(req.body);
+  if (!parse.success) {
+    return res.status(400).json({ error: parse.error.format() });
+  }
+  
+  const { entryId, threadId, userId, rating, comment } = parse.data;
+  
+  // Verify thread and entry exist
+  const thread = getThread(threadId);
+  if (!thread) {
+    return res.status(404).json({ error: "Thread not found" });
+  }
+  
+  const entry = thread.entries.find(e => e.entryId === entryId);
+  if (!entry) {
+    return res.status(404).json({ error: "Entry not found" });
+  }
+  
+  const feedback = createFeedback(entryId, threadId, userId, rating, comment);
+  
+  return res.status(201).json({
+    id: feedback.id,
+    feedback_id: feedback.feedbackId,
+    entry_id: feedback.entryId,
+    thread_id: feedback.threadId,
+    user_id: feedback.userId,
+    rating: feedback.rating,
+    comment: feedback.comment,
+    created_at: feedback.createdAt,
+  });
+});
+
+// Get feedback by feedback ID
+app.get("/feedback/:id", (req, res) => {
+  const feedback = getFeedback(req.params.id);
+  if (!feedback) {
+    return res.status(404).json({ error: "Feedback not found" });
+  }
+  
+  return res.json({
+    id: feedback.id,
+    feedback_id: feedback.feedbackId,
+    entry_id: feedback.entryId,
+    thread_id: feedback.threadId,
+    user_id: feedback.userId,
+    rating: feedback.rating,
+    comment: feedback.comment,
+    created_at: feedback.createdAt,
+  });
+});
+
+// Get feedback for a specific entry
+app.get("/entries/:entryId/feedback", (req, res) => {
+  const feedbackList = getFeedbackByEntry(req.params.entryId);
+  
+  const formatted = feedbackList.map(feedback => ({
+    id: feedback.id,
+    feedback_id: feedback.feedbackId,
+    entry_id: feedback.entryId,
+    thread_id: feedback.threadId,
+    user_id: feedback.userId,
+    rating: feedback.rating,
+    comment: feedback.comment,
+    created_at: feedback.createdAt,
+  }));
+  
+  return res.json(formatted);
+});
+
+// Get all feedback for a thread
+app.get("/threads/:threadId/feedback", (req, res) => {
+  const feedbackList = getFeedbackByThread(req.params.threadId);
+  
+  const formatted = feedbackList.map(feedback => ({
+    id: feedback.id,
+    feedback_id: feedback.feedbackId,
+    entry_id: feedback.entryId,
+    thread_id: feedback.threadId,
+    user_id: feedback.userId,
+    rating: feedback.rating,
+    comment: feedback.comment,
+    created_at: feedback.createdAt,
+  }));
+  
+  return res.json(formatted);
 });
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;

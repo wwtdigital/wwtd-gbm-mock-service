@@ -85,10 +85,39 @@ npm run format
 - **GET** `/threads/:id`
 - Returns thread data or 404 if not found
 
+## Feedback Endpoints
+
+### Create Feedback
+- **POST** `/feedback`
+- Body:
+  ```json
+  {
+    "entryId": "uuid",
+    "threadId": "uuid", 
+    "userId": "string",
+    "rating": "thumbs_up" | "thumbs_down",
+    "comment": "optional comment"
+  }
+  ```
+- Creates feedback for a specific entry in a thread
+
+### Get Feedback by ID
+- **GET** `/feedback/:id`
+- Returns feedback data or 404 if not found
+
+### Get Feedback for Entry
+- **GET** `/entries/:entryId/feedback`
+- Returns array of all feedback for a specific entry
+
+### Get Feedback for Thread
+- **GET** `/threads/:threadId/feedback`
+- Returns array of all feedback for all entries in a thread
+
 ## Features
 
 - **Thread-based conversations**: Create and manage conversation threads
 - **Auto-generated responses**: Automatically generates mock assistant replies
+- **Feedback system**: Thumbs up/down ratings with optional comments for entries
 - **Testing utilities**: Query parameters for delays and forced errors
 - **Docker support**: Production-ready containerization
 - **TypeScript**: Full type safety with Zod validation
@@ -138,4 +167,21 @@ curl http://localhost:8000/threads
 curl -X POST "http://localhost:8000/threads?delayMs=2000" \
   -H "Content-Type: application/json" \
   -d '{"userId": "test", "message": {"role": "user", "content": {"text": "Delayed message"}}}'
+
+# Create feedback for an assistant response
+curl -X POST http://localhost:8000/feedback \
+  -H "Content-Type: application/json" \
+  -d '{
+    "entryId": "ENTRY_UUID_HERE",
+    "threadId": "THREAD_UUID_HERE", 
+    "userId": "user123",
+    "rating": "thumbs_up",
+    "comment": "Great response!"
+  }'
+
+# Get feedback for a specific entry
+curl http://localhost:8000/entries/ENTRY_UUID_HERE/feedback
+
+# Get all feedback for a thread
+curl http://localhost:8000/threads/THREAD_UUID_HERE/feedback
 ```

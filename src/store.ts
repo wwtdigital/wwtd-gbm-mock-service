@@ -1,12 +1,15 @@
 import { v4 as uuid } from "uuid";
-import type { Thread } from "./types.js";
+import type { Thread, Feedback } from "./types.js";
 
 const threads = new Map<string, Thread>();
+const feedback = new Map<string, Feedback>();
 let nextThreadId = 1;
 let nextEntryId = 1;
+let nextFeedbackId = 1;
 
 export function clearStore() {
   threads.clear();
+  feedback.clear();
 }
 
 export function createThread(
@@ -66,5 +69,47 @@ export function listThreads(): Thread[] {
 
 export function nextEntryIdValue() {
   return nextEntryId;
+}
+
+// Feedback functions
+export function createFeedback(
+  entryId: string,
+  threadId: string,
+  userId: string,
+  rating: "thumbs_up" | "thumbs_down",
+  comment?: string,
+): Feedback {
+  const feedbackId = uuid();
+  const now = new Date().toISOString();
+
+  const feedbackRecord: Feedback = {
+    id: nextFeedbackId++,
+    feedbackId,
+    entryId,
+    threadId,
+    userId,
+    rating,
+    comment,
+    createdAt: now,
+  };
+
+  feedback.set(feedbackId, feedbackRecord);
+  return feedbackRecord;
+}
+
+export function getFeedback(id: string): Feedback | undefined {
+  return feedback.get(id);
+}
+
+export function getFeedbackByEntry(entryId: string): Feedback[] {
+  return Array.from(feedback.values()).filter(f => f.entryId === entryId);
+}
+
+export function getFeedbackByThread(threadId: string): Feedback[] {
+  return Array.from(feedback.values()).filter(f => f.threadId === threadId);
+}
+
+export function listFeedback(): Feedback[] {
+  return Array.from(feedback.values());
 }
 
