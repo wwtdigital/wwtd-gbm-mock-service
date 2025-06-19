@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   addCorsHeaders,
   logRequest,
-} from "@/src/middleware";
+} from "@/src/middleware-utils";
 import { config } from "@/src/config";
 
 export async function GET(request: NextRequest) {

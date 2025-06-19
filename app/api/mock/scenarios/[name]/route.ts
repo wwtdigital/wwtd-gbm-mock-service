@@ -3,7 +3,7 @@ import {
   addCorsHeaders,
   createErrorResponse,
   logRequest,
-} from "@/src/middleware";
+} from "@/src/middleware-utils";
 import { conversationScenarios } from "@/src/mock-responses";
 
 export async function GET(

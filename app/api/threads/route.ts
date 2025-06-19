@@ -16,7 +16,7 @@ import {
   createErrorResponse,
   handleDelay,
   logRequest,
-} from "../../../src/middleware";
+} from "../../../src/middleware-utils";
 import {
   createAssistantResponse,
   trackResponse,

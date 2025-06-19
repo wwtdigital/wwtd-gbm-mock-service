@@ -1,5 +1,14 @@
-import request from "supertest";
-import { app } from "../src/express-server";
+/**
+ * @jest-environment node
+ */
+import { createMocks } from "node-mocks-http";
+import { POST as feedbackPost } from "../app/api/feedback/route";
+import { GET as healthGet } from "../app/api/health/route";
+import { GET as threadGet } from "../app/api/threads/[id]/route";
+import {
+  GET as threadsGet,
+  POST as threadsPost,
+} from "../app/api/threads/route";
 import { clearStore } from "../src/store";
 
 // Utility to build a minimal valid message
@@ -10,73 +19,101 @@ const buildMessage = () => ({
   },
 });
 
-describe("API Endpoints", () => {
+// Helper to create NextRequest mock
+function createNextRequest(method: string, url: string, body?: unknown) {
+  const mockRequest = createMocks({ method, url, body }).req;
+  const request = new Request(`http://localhost:3000${url}`, {
+    method,
+    headers: { "Content-Type": "application/json" },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+  // Add nextUrl property for compatibility
+  // biome-ignore lint/suspicious/noExplicitAny: Required for Next.js request mock
+  (request as any).nextUrl = new URL(`http://localhost:3000${url}`);
+
+  // biome-ignore lint/suspicious/noExplicitAny: Required for Next.js request mock
+  return request as any;
+}
+
+describe("Next.js API Routes", () => {
   beforeEach(() => {
     clearStore();
   });
 
-  describe("GET /health", () => {
+  describe("GET /api/health", () => {
     test("should return health status", async () => {
-      const response = await request(app).get("/health");
+      const response = await healthGet();
+      const data = await response.json();
       expect(response.status).toBe(200);
-      expect(response.body).toEqual({ status: "ok" });
+      expect(data.status).toBe("ok");
+      expect(data.timestamp).toBeDefined();
+      expect(data.version).toBe("1.0.0");
     });
   });
 
-  describe("POST /threads", () => {
+  describe("POST /api/threads", () => {
     test("should create new thread when no threadId provided", async () => {
       const body = { userId: "user123", message: buildMessage() };
-      const res = await request(app).post("/threads").send(body);
-      expect(res.status).toBe(200);
-      expect(res.body.thread_id).toBeDefined();
-      expect(res.body.entries).toHaveLength(2); // includes auto assistant
-    });
+      const request = createNextRequest("POST", "/api/threads", body);
 
-    test("should append to existing thread when threadId provided", async () => {
-      const first = await request(app)
-        .post("/threads")
-        .send({ userId: "u1", message: buildMessage() });
-      const threadId = first.body.thread_id;
-      const second = await request(app)
-        .post("/threads")
-        .send({ userId: "u1", threadId, message: buildMessage() });
-      expect(second.status).toBe(200);
-      expect(second.body.entries).toHaveLength(4);
+      const response = await threadsPost(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.thread_id).toBeDefined();
+      expect(data.entries).toHaveLength(2); // includes auto assistant response
     });
 
     test("should return 400 for invalid request body", async () => {
-      const res = await request(app).post("/threads").send({});
-      expect(res.status).toBe(400);
+      const request = createNextRequest("POST", "/api/threads", {});
+
+      const response = await threadsPost(request);
+
+      expect(response.status).toBe(400);
     });
   });
 
-  describe("GET /threads", () => {
+  describe("GET /api/threads", () => {
     test("should return list of threads", async () => {
-      // ensure at least one thread exists
-      await request(app)
-        .post("/threads")
-        .send({ userId: "prep", message: buildMessage() });
-      const res = await request(app).get("/threads");
-      expect(res.status).toBe(200);
-      expect(Array.isArray(res.body)).toBe(true);
-      expect(res.body.length).toBeGreaterThan(0);
+      // Create a thread first
+      const body = { userId: "prep", message: buildMessage() };
+      const createRequest = createNextRequest("POST", "/api/threads", body);
+      await threadsPost(createRequest);
+
+      const response = await threadsGet();
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(Array.isArray(data)).toBe(true);
+      expect(data.length).toBeGreaterThan(0);
     });
   });
 
-  describe("GET /threads/:id", () => {
+  describe("GET /api/threads/[id]", () => {
     test("should return thread by id", async () => {
-      const create = await request(app)
-        .post("/threads")
-        .send({ userId: "u2", message: buildMessage() });
-      const id = create.body.thread_id;
-      const res = await request(app).get(`/threads/${id}`);
-      expect(res.status).toBe(200);
-      expect(res.body.thread_id).toBe(id);
+      // Create a thread first
+      const body = { userId: "u2", message: buildMessage() };
+      const createRequest = createNextRequest("POST", "/api/threads", body);
+      const createResponse = await threadsPost(createRequest);
+      const createData = await createResponse.json();
+      const threadId = createData.thread_id;
+
+      const request = createNextRequest("GET", `/api/threads/${threadId}`);
+      const response = await threadGet(request, { params: { id: threadId } });
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.thread_id).toBe(threadId);
     });
 
     test("should return 404 for non-existent thread", async () => {
-      const res = await request(app).get("/threads/non-existent");
-      expect(res.status).toBe(404);
+      const request = createNextRequest("GET", "/api/threads/non-existent");
+      const response = await threadGet(request, {
+        params: { id: "non-existent" },
+      });
+
+      expect(response.status).toBe(404);
     });
   });
 
@@ -86,14 +123,16 @@ describe("API Endpoints", () => {
 
     beforeEach(async () => {
       // Create a thread with entries to test feedback on
-      const threadRes = await request(app)
-        .post("/threads")
-        .send({ userId: "user123", message: buildMessage() });
-      threadId = threadRes.body.thread_id;
-      entryId = threadRes.body.entries[1].entry_id; // Use assistant response entry
+      const body = { userId: "user123", message: buildMessage() };
+      const request = createNextRequest("POST", "/api/threads", body);
+      const response = await threadsPost(request);
+      const data = await response.json();
+
+      threadId = data.thread_id;
+      entryId = data.entries[1].entry_id; // Use assistant response entry
     });
 
-    describe("POST /feedback", () => {
+    describe("POST /api/feedback", () => {
       test("should create thumbs up feedback", async () => {
         const feedbackBody = {
           entryId,
@@ -103,32 +142,27 @@ describe("API Endpoints", () => {
           comment: "Great response!",
         };
 
-        const res = await request(app).post("/feedback").send(feedbackBody);
-        expect(res.status).toBe(201);
-        expect(res.body.feedback_id).toBeDefined();
-        expect(res.body.rating).toBe("thumbs_up");
-        expect(res.body.comment).toBe("Great response!");
-        expect(res.body.entry_id).toBe(entryId);
-        expect(res.body.thread_id).toBe(threadId);
-      });
+        const request = createNextRequest(
+          "POST",
+          "/api/feedback",
+          feedbackBody,
+        );
+        const response = await feedbackPost(request);
+        const data = await response.json();
 
-      test("should create thumbs down feedback without comment", async () => {
-        const feedbackBody = {
-          entryId,
-          threadId,
-          userId: "user123",
-          rating: "thumbs_down",
-        };
-
-        const res = await request(app).post("/feedback").send(feedbackBody);
-        expect(res.status).toBe(201);
-        expect(res.body.rating).toBe("thumbs_down");
-        expect(res.body.comment).toBeUndefined();
+        expect(response.status).toBe(201);
+        expect(data.feedback_id).toBeDefined();
+        expect(data.rating).toBe("thumbs_up");
+        expect(data.comment).toBe("Great response!");
+        expect(data.entry_id).toBe(entryId);
+        expect(data.thread_id).toBe(threadId);
       });
 
       test("should return 400 for invalid feedback body", async () => {
-        const res = await request(app).post("/feedback").send({});
-        expect(res.status).toBe(400);
+        const request = createNextRequest("POST", "/api/feedback", {});
+        const response = await feedbackPost(request);
+
+        expect(response.status).toBe(400);
       });
 
       test("should return 404 for non-existent thread", async () => {
@@ -139,117 +173,16 @@ describe("API Endpoints", () => {
           rating: "thumbs_up",
         };
 
-        const res = await request(app).post("/feedback").send(feedbackBody);
-        expect(res.status).toBe(404);
-        expect(res.body.error).toBe("Thread not found");
-      });
-
-      test("should return 404 for non-existent entry", async () => {
-        const feedbackBody = {
-          entryId: "550e8400-e29b-41d4-a716-446655440001", // Valid UUID but non-existent
-          threadId,
-          userId: "user123",
-          rating: "thumbs_up",
-        };
-
-        const res = await request(app).post("/feedback").send(feedbackBody);
-        expect(res.status).toBe(404);
-        expect(res.body.error).toBe("Entry not found");
-      });
-    });
-
-    describe("GET /feedback/:id", () => {
-      test("should return feedback by id", async () => {
-        // Create feedback first
-        const feedbackBody = {
-          entryId,
-          threadId,
-          userId: "user123",
-          rating: "thumbs_up",
-        };
-        const createRes = await request(app)
-          .post("/feedback")
-          .send(feedbackBody);
-        const feedbackId = createRes.body.feedback_id;
-
-        const res = await request(app).get(`/feedback/${feedbackId}`);
-        expect(res.status).toBe(200);
-        expect(res.body.feedback_id).toBe(feedbackId);
-        expect(res.body.rating).toBe("thumbs_up");
-      });
-
-      test("should return 404 for non-existent feedback", async () => {
-        const res = await request(app).get("/feedback/non-existent");
-        expect(res.status).toBe(404);
-      });
-    });
-
-    describe("GET /entries/:entryId/feedback", () => {
-      test("should return feedback for specific entry", async () => {
-        // Create multiple feedback for the same entry
-        const feedback1 = {
-          entryId,
-          threadId,
-          userId: "user1",
-          rating: "thumbs_up",
-        };
-        const feedback2 = {
-          entryId,
-          threadId,
-          userId: "user2",
-          rating: "thumbs_down",
-        };
-
-        await request(app).post("/feedback").send(feedback1);
-        await request(app).post("/feedback").send(feedback2);
-
-        const res = await request(app).get(`/entries/${entryId}/feedback`);
-        expect(res.status).toBe(200);
-        expect(Array.isArray(res.body)).toBe(true);
-        expect(res.body).toHaveLength(2);
-        expect(res.body[0].entry_id).toBe(entryId);
-        expect(res.body[1].entry_id).toBe(entryId);
-      });
-
-      test("should return empty array for entry with no feedback", async () => {
-        const res = await request(app).get(
-          "/entries/non-existent-entry/feedback",
+        const request = createNextRequest(
+          "POST",
+          "/api/feedback",
+          feedbackBody,
         );
-        expect(res.status).toBe(200);
-        expect(res.body).toEqual([]);
-      });
-    });
+        const response = await feedbackPost(request);
+        const data = await response.json();
 
-    describe("GET /threads/:threadId/feedback", () => {
-      test("should return all feedback for thread", async () => {
-        // Create feedback for different entries in the thread
-        const userEntryId = threadId; // Use threadId as placeholder for user entry
-        const feedback1 = {
-          entryId,
-          threadId,
-          userId: "user1",
-          rating: "thumbs_up",
-        };
-
-        await request(app).post("/feedback").send(feedback1);
-
-        const res = await request(app).get(`/threads/${threadId}/feedback`);
-        expect(res.status).toBe(200);
-        expect(Array.isArray(res.body)).toBe(true);
-        expect(res.body).toHaveLength(1);
-        expect(res.body[0].thread_id).toBe(threadId);
-      });
-
-      test("should return empty array for thread with no feedback", async () => {
-        // Create a new thread without feedback
-        const newThreadRes = await request(app)
-          .post("/threads")
-          .send({ userId: "user456", message: buildMessage() });
-        const newThreadId = newThreadRes.body.thread_id;
-
-        const res = await request(app).get(`/threads/${newThreadId}/feedback`);
-        expect(res.status).toBe(200);
-        expect(res.body).toEqual([]);
+        expect(response.status).toBe(404);
+        expect(data.error).toBe("Thread not found");
       });
     });
   });

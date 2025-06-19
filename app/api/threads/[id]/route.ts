@@ -7,7 +7,7 @@ import {
   logRequest,
   handleDelay as delayResponse,
   checkForceError as forceError,
-} from "../../../../src/middleware";
+} from "../../../../src/middleware-utils";
 
 export async function GET(
   request: NextRequest,

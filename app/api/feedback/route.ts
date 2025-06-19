@@ -7,7 +7,7 @@ import {
   addCorsHeaders,
   createErrorResponse,
   logRequest,
-} from "../../../src/middleware";
+} from "../../../src/middleware-utils";
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();

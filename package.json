@@ -2,14 +2,13 @@
   "name": "wwtd-gbm-mock-service",
   "version": "0.1.0",
   "type": "module",
-  "main": "dist/index.js",
   "scripts": {
     "dev": "next dev -p 8000",
     "build": "next build",
     "start": "next start -p 8000",
-    "docker:build": "docker build -t gbm-mock-service .",
-    "docker:run": "docker run -d --name gbm-mock-service -p 8000:8000 gbm-mock-service",
-    "docker:stop": "docker stop gbm-mock-service && docker rm gbm-mock-service",
+    "docker:build": "docker build -t wwtd-gbm-mock-service .",
+    "docker:run": "docker run -d --name wwtd-gbm-mock-service -p 8000:8000 wwtd-gbm-mock-service",
+    "docker:stop": "docker stop wwtd-gbm-mock-service && docker rm wwtd-gbm-mock-service",
     "test": "jest",
     "lint": "npx @biomejs/biome check .",
     "format": "npx @biomejs/biome format ."
