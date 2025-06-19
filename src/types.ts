@@ -15,6 +15,7 @@ export const UniversalMessageSchema = z.object({
 export type UniversalMessage = z.infer<typeof UniversalMessageSchema>;
 
 export const EntrySchema = z.object({
+  id: z.number().optional(),
   entryId: z.string().uuid(),
   threadId: z.string().uuid(),
   category: z.enum(["request", "response"]),
@@ -24,6 +25,7 @@ export const EntrySchema = z.object({
 export type Entry = z.infer<typeof EntrySchema>;
 
 export const ThreadSchema = z.object({
+  id: z.number().optional(),
   threadId: z.string().uuid(),
   userId: z.string(),
   createdAt: z.string().datetime(),

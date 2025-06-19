@@ -1,13 +1,15 @@
 import express from "express";
 import { z } from "zod";
-import { appendToThread, createThread, getThread } from "./store.js";
+import { v4 as uuid } from "uuid";
+import { appendToThread, createThread, getThread, listThreads } from "./store.js";
 import {
   type ThreadRequest,
   ThreadRequestSchema,
   ThreadSchema,
 } from "./types.js";
+import { formatThread } from "./utils.js";
 
-const app = express();
+export const app = express();
 app.use(express.json());
 
 // Health check
@@ -39,8 +41,32 @@ app.post("/threads", async (req, res) => {
     return res.status(404).json({ error: "Thread not found" });
   }
 
-  const updated = thread ?? createThread(userId, message);
-  return res.status(200).json(updated);
+    const updated = thread ?? createThread(userId, message);
+
+  // Auto-generate assistant response entry to simulate LLM reply
+  const assistantEntry = {
+    entryId: uuid(),
+    threadId: updated.threadId,
+    category: "response" as const,
+    data: {
+      role: "assistant" as const,
+      content: {
+        text: `Mock response to: ${message.content.text ?? "(no text)"}`,
+        visual: {},
+        sources: [],
+      },
+    },
+    createdAt: new Date().toISOString(),
+  };
+  updated.entries.push(assistantEntry);
+
+  return res.status(200).json(formatThread(updated));
+});
+
+// List all threads
+app.get("/threads", (req, res) => {
+  const arr = listThreads().map(formatThread);
+  res.json(arr);
 });
 
 // Get thread by id
@@ -49,11 +75,13 @@ app.get("/threads/:id", (req, res) => {
   if (!thread) {
     return res.status(404).json({ error: "Thread not found" });
   }
-  return res.json(thread);
+  return res.json(formatThread(thread));
 });
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
-app.listen(PORT, () => {
-  /* eslint-disable no-console */
-  console.log(`Mock service listening on http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => {
+    /* eslint-disable no-console */
+    console.log(`Mock service listening on http://localhost:${PORT}`);
+  });
+}

@@ -2,6 +2,12 @@ import { v4 as uuid } from "uuid";
 import type { Thread } from "./types.js";
 
 const threads = new Map<string, Thread>();
+let nextThreadId = 1;
+let nextEntryId = 1;
+
+export function clearStore() {
+  threads.clear();
+}
 
 export function createThread(
   userId: string,
@@ -12,11 +18,13 @@ export function createThread(
   const now = new Date().toISOString();
 
   const thread: Thread = {
+    id: nextThreadId++,
     threadId,
     userId,
     createdAt: now,
     entries: [
       {
+        id: nextEntryId++,
         entryId,
         threadId,
         category: "request",
@@ -38,6 +46,7 @@ export function appendToThread(
   const entryId = uuid();
   const now = new Date().toISOString();
   thread.entries.push({
+    id: nextEntryId++,
     entryId,
     threadId,
     category: "request",
@@ -50,3 +59,12 @@ export function appendToThread(
 export function getThread(id: string): Thread | undefined {
   return threads.get(id);
 }
+
+export function listThreads(): Thread[] {
+  return Array.from(threads.values());
+}
+
+export function nextEntryIdValue() {
+  return nextEntryId;
+}
+
