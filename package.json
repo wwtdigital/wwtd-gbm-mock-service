@@ -4,30 +4,34 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "build": "tsc -p tsconfig.json",
-    "start": "node dist/index.js",
+    "dev": "next dev -p 8000",
+    "build": "next build",
+    "start": "next start -p 8000",
+    "docker:build": "docker build -t gbm-mock-service .",
+    "docker:run": "docker run -d --name gbm-mock-service -p 8000:8000 gbm-mock-service",
+    "docker:stop": "docker stop gbm-mock-service && docker rm gbm-mock-service",
     "test": "jest",
     "lint": "npx @biomejs/biome check .",
     "format": "npx @biomejs/biome format ."
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "ts-node": "^10.9.2",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "next": "^15.3.4",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "uuid": "^9.0.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.8.3",
-    "@types/express": "^4.17.18",
     "@types/jest": "^29.5.0",
-    "@types/supertest": "^6.0.2",
+    "@types/supertest": "^6.0.3",
     "@types/uuid": "^9.0.2",
     "jest": "^29.7.0",
+    "node-mocks-http": "^1.17.2",
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.0",
-    "ts-node-dev": "^2.0.0",
-    "tsx": "^4.20.3",
     "typescript": "^5.4.0"
   }
 }
