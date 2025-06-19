@@ -1,9 +1,6 @@
-import { config } from "./config.js";
-import {
-  conversationScenarios,
-  generateMockResponse,
-} from "./mock-responses.js";
-import type { UniversalMessage } from "./types.js";
+import { config } from "./config";
+import { conversationScenarios, generateMockResponse } from "./mock-responses";
+import type { UniversalMessage } from "./types";
 
 export interface GeneratedResponse {
   content: UniversalMessage["content"];
@@ -120,7 +117,7 @@ export function getScenarioResponse(
     return null;
   }
 
-  return scenario.exchanges[exchangeIndex].assistantResponse;
+  return scenario.exchanges[exchangeIndex]?.assistantResponse ?? null;
 }
 
 // Advanced response features

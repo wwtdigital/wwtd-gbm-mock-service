@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { addCorsHeaders, logRequest } from "../../../src/middleware.js";
+import { addCorsHeaders, logRequest } from "../../../src/middleware";
 
 export async function GET(request: NextRequest) {
   const startTime = Date.now();

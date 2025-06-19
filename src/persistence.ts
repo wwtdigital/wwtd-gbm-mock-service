@@ -1,7 +1,7 @@
 import { promises as fs } from "node:fs";
 import { join } from "node:path";
-import { config } from "./config.js";
-import type { Feedback, Thread } from "./types.js";
+import { config } from "./config";
+import type { Feedback, Thread } from "./types";
 
 export interface PersistenceLayer {
   saveThread(thread: Thread): Promise<void>;

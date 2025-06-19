@@ -6,7 +6,8 @@ export const openApiSpec = {
   info: {
     title: "WWTD GBM Mock Service API",
     version: "1.0.0",
-    description: "A mock service for simulating thread-based messaging API endpoints with automatic assistant responses",
+    description:
+      "A mock service for simulating thread-based messaging API endpoints with automatic assistant responses",
     contact: {
       name: "WWTD Team",
     },
@@ -65,7 +66,8 @@ export const openApiSpec = {
       post: {
         tags: ["Threads"],
         summary: "Create or append to a thread",
-        description: "Create a new thread or append a message to an existing thread",
+        description:
+          "Create a new thread or append a message to an existing thread",
         parameters: [
           {
             name: "delayMs",
@@ -584,7 +586,14 @@ export const openApiSpec = {
       },
       Feedback: {
         type: "object",
-        required: ["feedbackId", "entryId", "threadId", "userId", "rating", "createdAt"],
+        required: [
+          "feedbackId",
+          "entryId",
+          "threadId",
+          "userId",
+          "rating",
+          "createdAt",
+        ],
         properties: {
           id: {
             type: "integer",

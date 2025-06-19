@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   addCorsHeaders,
   logRequest,
-} from "../../../../src/middleware.js";
-import { conversationScenarios } from "../../../../src/mock-responses.js";
+} from "@/src/middleware";
+import { conversationScenarios } from "@/src/mock-responses";
 
 export async function GET(request: NextRequest) {
   const startTime = Date.now();

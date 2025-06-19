@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getFeedbackByEntry } from "../../../../../src/store.js";
+import { getFeedbackByEntry } from "@/src/store";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { entryId: string } },
+  { params }: { params: Promise<{ entryId: string }> },
 ) {
-  const feedbackList = getFeedbackByEntry(params.entryId);
+  const { entryId } = await params;
+  const feedbackList = getFeedbackByEntry(entryId);
 
   const formatted = feedbackList.map((feedback) => ({
     id: feedback.id,

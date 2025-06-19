@@ -1,4 +1,4 @@
-import type { UniversalMessage } from "./types.js";
+import type { UniversalMessage } from "./types";
 
 export interface MockResponseTemplate {
   patterns: string[];
@@ -240,7 +240,12 @@ export function findMatchingTemplate(input: string): MockResponseTemplate {
   }
 
   // Fallback to last template (default)
-  return mockResponseTemplates[mockResponseTemplates.length - 1];
+  const fallbackTemplate =
+    mockResponseTemplates[mockResponseTemplates.length - 1];
+  if (!fallbackTemplate) {
+    throw new Error("No response templates available");
+  }
+  return fallbackTemplate;
 }
 
 export function generateMockResponse(input: string): {
@@ -251,6 +256,9 @@ export function generateMockResponse(input: string): {
   const responses = template.responses;
   const selectedResponse =
     responses[Math.floor(Math.random() * responses.length)];
+  if (!selectedResponse) {
+    throw new Error("No responses available in template");
+  }
 
   // Add some variation to delay
   const baseDelay = template.delayMs || 1000;

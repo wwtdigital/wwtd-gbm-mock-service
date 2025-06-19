@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getFeedbackByThread } from "../../../../../src/store.js";
+import { getFeedbackByThread } from "@/src/store";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  const feedbackList = getFeedbackByThread(params.id);
+  const { id } = await params;
+  const feedbackList = getFeedbackByThread(id);
 
   const formatted = feedbackList.map((feedback) => ({
     id: feedback.id,

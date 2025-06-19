@@ -11,15 +11,15 @@ import {
   getThread,
   listFeedback,
   listThreads,
-} from "./store.js";
+} from "./store";
 import {
   type FeedbackRequest,
   FeedbackRequestSchema,
   type ThreadRequest,
   ThreadRequestSchema,
   ThreadSchema,
-} from "./types.js";
-import { formatThread } from "./utils.js";
+} from "./types";
+import { formatThread } from "./utils";
 
 export const app = express();
 app.use(express.json());

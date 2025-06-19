@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { config } from "./config.js";
+import { config } from "./config";
 
 // Standard error response format
 export interface ErrorResponse {
@@ -19,10 +19,10 @@ export function createErrorResponse(
 ): NextResponse {
   const errorResponse: ErrorResponse = {
     error,
-    message,
-    code,
     timestamp: new Date().toISOString(),
     path: request.nextUrl.pathname,
+    ...(message !== undefined && { message }),
+    ...(code !== undefined && { code }),
   };
 
   return NextResponse.json(errorResponse, { status });

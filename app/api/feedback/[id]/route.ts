@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getFeedback } from "../../../../src/store.js";
+import { getFeedback } from "@/src/store";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  const feedback = getFeedback(params.id);
+  const { id } = await params;
+  const feedback = getFeedback(id);
   if (!feedback) {
     return NextResponse.json({ error: "Feedback not found" }, { status: 404 });
   }

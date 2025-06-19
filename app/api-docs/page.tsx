@@ -27,7 +27,7 @@ export default function ApiDocs() {
             <div>
               <h3 className="font-semibold mb-2">Base URL</h3>
               <code className="bg-gray-100 px-2 py-1 rounded text-sm block">
-                {openApiSpec.servers[0].url}
+                {openApiSpec.servers?.[0]?.url || "http://localhost:8000"}
               </code>
             </div>
             <div>
@@ -66,7 +66,7 @@ export default function ApiDocs() {
                       delete: "bg-red-100 text-red-800 border-red-200",
                     };
                     
-                    const colorClass = methodColors[method] || "bg-gray-100 text-gray-800 border-gray-200";
+                    const colorClass = methodColors[method as keyof typeof methodColors] || "bg-gray-100 text-gray-800 border-gray-200";
                     
                     return (
                       <div key={`${path}-${method}`} className={`border-l-4 ${colorClass} pl-4 py-1`}>
@@ -93,7 +93,7 @@ export default function ApiDocs() {
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  {details.parameters.map((param, i) => (
+                                  {details.parameters.map((param: any, i: number) => (
                                     <tr key={i} className="border-b border-gray-200">
                                       <td className="py-2 font-mono">{param.name}</td>
                                       <td className="py-2">{param.in}</td>
@@ -132,7 +132,7 @@ export default function ApiDocs() {
                               </tr>
                             </thead>
                             <tbody>
-                              {Object.entries(details.responses).map(([status, response]) => (
+                              {Object.entries(details.responses).map(([status, response]: [string, any]) => (
                                 <tr key={status} className="border-b border-gray-200">
                                   <td className="py-2 font-mono">{status}</td>
                                   <td className="py-2">{response.description}</td>
@@ -172,16 +172,16 @@ export default function ApiDocs() {
                       </thead>
                       <tbody>
                         {Object.entries(schema.properties).map(([propName, prop]) => {
-                          const isRequired = schema.required?.includes(propName) || false;
+                          const isRequired = (schema as any).required?.includes(propName) || false;
                           return (
                             <tr key={propName} className="border-b border-gray-200">
                               <td className="py-2 font-mono">{propName}</td>
                               <td className="py-2">
-                                {prop.$ref ? prop.$ref.split("/").pop() : prop.type}
-                                {prop.enum && ` (${prop.enum.join(', ')})`}
+                                {(prop as any).$ref ? (prop as any).$ref.split("/").pop() : (prop as any).type}
+                                {(prop as any).enum && ` (${(prop as any).enum.join(', ')})`}
                               </td>
                               <td className="py-2">{isRequired ? "Yes" : "No"}</td>
-                              <td className="py-2">{prop.description || ""}</td>
+                              <td className="py-2">{(prop as any).description || ""}</td>
                             </tr>
                           );
                         })}

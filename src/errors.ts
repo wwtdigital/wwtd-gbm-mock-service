@@ -38,7 +38,10 @@ export class AppError extends Error {
  * Specialized error classes
  */
 export class NotFoundError extends AppError {
-  constructor(message = "Resource not found", details?: Record<string, unknown>) {
+  constructor(
+    message = "Resource not found",
+    details?: Record<string, unknown>,
+  ) {
     super(message, 404, "NOT_FOUND", details);
     this.name = "NotFoundError";
     Object.setPrototypeOf(this, NotFoundError.prototype);
@@ -70,7 +73,10 @@ export class ForbiddenError extends AppError {
 }
 
 export class RateLimitError extends AppError {
-  constructor(message = "Rate limit exceeded", details?: Record<string, unknown>) {
+  constructor(
+    message = "Rate limit exceeded",
+    details?: Record<string, unknown>,
+  ) {
     super(message, 429, "RATE_LIMIT_EXCEEDED", details);
     this.name = "RateLimitError";
     Object.setPrototypeOf(this, RateLimitError.prototype);
@@ -103,7 +109,8 @@ export function handleApiError(error: unknown) {
   }
 
   // Handle generic errors
-  const message = error instanceof Error ? error.message : "An unexpected error occurred";
+  const message =
+    error instanceof Error ? error.message : "An unexpected error occurred";
   return NextResponse.json(
     {
       error: {
@@ -127,7 +134,9 @@ export async function parseRequestSafely<T>(
     return schema.parse(body);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      throw new ValidationError("Invalid request data", { issues: error.errors });
+      throw new ValidationError("Invalid request data", {
+        issues: error.errors,
+      });
     }
     throw new ValidationError("Could not parse request body");
   }

@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid";
-import type { Feedback, Thread } from "./types.js";
+import type { Feedback, Thread } from "./types";
 
 const threads = new Map<string, Thread>();
 const feedback = new Map<string, Feedback>();

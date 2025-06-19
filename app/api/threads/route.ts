@@ -4,23 +4,23 @@ import {
   appendToThread,
   createThread,
   listThreads,
-} from "../../../src/store.js";
+} from "../../../src/store";
 import {
   type ThreadRequest,
   ThreadRequestSchema,
-} from "../../../src/types.js";
-import { formatThread } from "../../../src/utils.js";
+} from "../../../src/types";
+import { formatThread } from "../../../src/utils";
 import {
   addCorsHeaders,
   checkForceError,
   createErrorResponse,
   handleDelay,
   logRequest,
-} from "../../../src/middleware.js";
+} from "../../../src/middleware";
 import {
   createAssistantResponse,
   trackResponse,
-} from "../../../src/response-generator.js";
+} from "../../../src/response-generator";
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();

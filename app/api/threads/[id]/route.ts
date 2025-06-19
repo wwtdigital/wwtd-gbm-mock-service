@@ -1,21 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getThread } from "../../../../src/store.js";
-import { formatThread } from "../../../../src/utils.js";
+import { getThread } from "../../../../src/store";
+import { formatThread } from "../../../../src/utils";
 import {
   addCorsHeaders,
   createErrorResponse,
   logRequest,
-} from "../../../../src/middleware.js";
+  handleDelay as delayResponse,
+  checkForceError as forceError,
+} from "../../../../src/middleware";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const startTime = Date.now();
   logRequest(request, startTime);
 
   try {
-    const thread = getThread(params.id);
+    const { id } = await params;
+    const thread = getThread(id);
     if (!thread) {
       return addCorsHeaders(
         createErrorResponse("Thread not found", request, 404, "THREAD_NOT_FOUND")

@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createFeedback, getThread } from "../../../src/store.js";
+import { createFeedback, getThread } from "../../../src/store";
 import {
   FeedbackRequestSchema,
-} from "../../../src/types.js";
+} from "../../../src/types";
 import {
   addCorsHeaders,
   createErrorResponse,
   logRequest,
-} from "../../../src/middleware.js";
+} from "../../../src/middleware";
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();

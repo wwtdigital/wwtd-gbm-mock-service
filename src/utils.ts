@@ -1,4 +1,4 @@
-import type { Thread } from "./types.js";
+import type { Thread } from "./types";
 export function formatThread(thread: Thread) {
   return {
     id: thread.id,

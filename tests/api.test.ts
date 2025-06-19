@@ -1,5 +1,5 @@
 import request from "supertest";
-import { app } from "../src/index";
+import { app } from "../src/express-server";
 import { clearStore } from "../src/store";
 
 // Utility to build a minimal valid message

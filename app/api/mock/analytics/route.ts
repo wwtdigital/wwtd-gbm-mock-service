@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   addCorsHeaders,
   logRequest,
-} from "../../../../src/middleware.js";
+} from "@/src/middleware";
 import {
   getResponseAnalytics,
   resetResponseAnalytics,
-} from "../../../../src/response-generator.js";
+} from "@/src/response-generator";
 
 export async function GET(request: NextRequest) {
   const startTime = Date.now();
