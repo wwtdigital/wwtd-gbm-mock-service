@@ -1,23 +1,23 @@
 import express from "express";
-import { z } from "zod";
 import { v4 as uuid } from "uuid";
-import { 
-  appendToThread, 
-  createThread, 
-  getThread, 
-  listThreads,
+import { z } from "zod";
+import {
+  appendToThread,
   createFeedback,
+  createThread,
   getFeedback,
   getFeedbackByEntry,
   getFeedbackByThread,
+  getThread,
   listFeedback,
+  listThreads,
 } from "./store.js";
 import {
+  type FeedbackRequest,
+  FeedbackRequestSchema,
   type ThreadRequest,
   ThreadRequestSchema,
   ThreadSchema,
-  type FeedbackRequest,
-  FeedbackRequestSchema,
 } from "./types.js";
 import { formatThread } from "./utils.js";
 
@@ -53,7 +53,7 @@ app.post("/threads", async (req, res) => {
     return res.status(404).json({ error: "Thread not found" });
   }
 
-    const updated = thread ?? createThread(userId, message);
+  const updated = thread ?? createThread(userId, message);
 
   // Auto-generate assistant response entry to simulate LLM reply
   const assistantEntry = {
@@ -96,22 +96,22 @@ app.post("/feedback", (req, res) => {
   if (!parse.success) {
     return res.status(400).json({ error: parse.error.format() });
   }
-  
+
   const { entryId, threadId, userId, rating, comment } = parse.data;
-  
+
   // Verify thread and entry exist
   const thread = getThread(threadId);
   if (!thread) {
     return res.status(404).json({ error: "Thread not found" });
   }
-  
-  const entry = thread.entries.find(e => e.entryId === entryId);
+
+  const entry = thread.entries.find((e) => e.entryId === entryId);
   if (!entry) {
     return res.status(404).json({ error: "Entry not found" });
   }
-  
+
   const feedback = createFeedback(entryId, threadId, userId, rating, comment);
-  
+
   return res.status(201).json({
     id: feedback.id,
     feedback_id: feedback.feedbackId,
@@ -130,7 +130,7 @@ app.get("/feedback/:id", (req, res) => {
   if (!feedback) {
     return res.status(404).json({ error: "Feedback not found" });
   }
-  
+
   return res.json({
     id: feedback.id,
     feedback_id: feedback.feedbackId,
@@ -146,8 +146,8 @@ app.get("/feedback/:id", (req, res) => {
 // Get feedback for a specific entry
 app.get("/entries/:entryId/feedback", (req, res) => {
   const feedbackList = getFeedbackByEntry(req.params.entryId);
-  
-  const formatted = feedbackList.map(feedback => ({
+
+  const formatted = feedbackList.map((feedback) => ({
     id: feedback.id,
     feedback_id: feedback.feedbackId,
     entry_id: feedback.entryId,
@@ -157,15 +157,15 @@ app.get("/entries/:entryId/feedback", (req, res) => {
     comment: feedback.comment,
     created_at: feedback.createdAt,
   }));
-  
+
   return res.json(formatted);
 });
 
 // Get all feedback for a thread
 app.get("/threads/:threadId/feedback", (req, res) => {
   const feedbackList = getFeedbackByThread(req.params.threadId);
-  
-  const formatted = feedbackList.map(feedback => ({
+
+  const formatted = feedbackList.map((feedback) => ({
     id: feedback.id,
     feedback_id: feedback.feedbackId,
     entry_id: feedback.entryId,
@@ -175,7 +175,7 @@ app.get("/threads/:threadId/feedback", (req, res) => {
     comment: feedback.comment,
     created_at: feedback.createdAt,
   }));
-  
+
   return res.json(formatted);
 });
 

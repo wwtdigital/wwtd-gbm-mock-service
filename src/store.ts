@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid";
-import type { Thread, Feedback } from "./types.js";
+import type { Feedback, Thread } from "./types.js";
 
 const threads = new Map<string, Thread>();
 const feedback = new Map<string, Feedback>();
@@ -102,14 +102,13 @@ export function getFeedback(id: string): Feedback | undefined {
 }
 
 export function getFeedbackByEntry(entryId: string): Feedback[] {
-  return Array.from(feedback.values()).filter(f => f.entryId === entryId);
+  return Array.from(feedback.values()).filter((f) => f.entryId === entryId);
 }
 
 export function getFeedbackByThread(threadId: string): Feedback[] {
-  return Array.from(feedback.values()).filter(f => f.threadId === threadId);
+  return Array.from(feedback.values()).filter((f) => f.threadId === threadId);
 }
 
 export function listFeedback(): Feedback[] {
   return Array.from(feedback.values());
 }
-

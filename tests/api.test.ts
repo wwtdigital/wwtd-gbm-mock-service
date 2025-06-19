@@ -11,8 +11,6 @@ const buildMessage = () => ({
 });
 
 describe("API Endpoints", () => {
-
-
   beforeEach(() => {
     clearStore();
   });
@@ -55,7 +53,9 @@ describe("API Endpoints", () => {
   describe("GET /threads", () => {
     test("should return list of threads", async () => {
       // ensure at least one thread exists
-      await request(app).post("/threads").send({ userId: "prep", message: buildMessage() });
+      await request(app)
+        .post("/threads")
+        .send({ userId: "prep", message: buildMessage() });
       const res = await request(app).get("/threads");
       expect(res.status).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
@@ -167,7 +167,9 @@ describe("API Endpoints", () => {
           userId: "user123",
           rating: "thumbs_up",
         };
-        const createRes = await request(app).post("/feedback").send(feedbackBody);
+        const createRes = await request(app)
+          .post("/feedback")
+          .send(feedbackBody);
         const feedbackId = createRes.body.feedback_id;
 
         const res = await request(app).get(`/feedback/${feedbackId}`);
@@ -210,7 +212,9 @@ describe("API Endpoints", () => {
       });
 
       test("should return empty array for entry with no feedback", async () => {
-        const res = await request(app).get(`/entries/non-existent-entry/feedback`);
+        const res = await request(app).get(
+          "/entries/non-existent-entry/feedback",
+        );
         expect(res.status).toBe(200);
         expect(res.body).toEqual([]);
       });
