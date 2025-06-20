@@ -5,13 +5,13 @@ import { formatUser } from "@/src/utils";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: { id: string } },
 ) {
   const startTime = Date.now();
   logRequest(request, startTime);
 
   try {
-    const { id } = await params;
+    const { id } = params;
     const user = getUser(id);
     if (!user) {
       return addCorsHeaders(
@@ -35,13 +35,13 @@ export async function GET(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: { id: string } },
 ) {
   const startTime = Date.now();
   logRequest(request, startTime);
 
   try {
-    const { id } = await params;
+    const { id } = params;
     const ok = deleteUser(id);
     if (!ok) {
       return addCorsHeaders(
