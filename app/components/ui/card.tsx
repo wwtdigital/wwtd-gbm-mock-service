@@ -45,10 +45,15 @@ export function EndpointItem({ method, path, description }: EndpointItemProps): 
 
   return (
     <div className="flex items-center">
-      <span className={`${methodColors[method]} px-2 py-1 rounded text-sm font-mono mr-3`}>
+      <span 
+        className={`${methodColors[method]} px-2 py-1 rounded text-sm font-mono mr-3`}
+        aria-label={`HTTP ${method} method`}
+      >
         {method}
       </span>
-      <code className="text-sm">{path}</code>
+      <code className="text-sm" role="code" aria-label={`API endpoint: ${path}`}>
+        {path}
+      </code>
       <span className="text-gray-500 ml-2">- {description}</span>
     </div>
   );
