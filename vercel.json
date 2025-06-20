@@ -1,11 +1,13 @@
 {
   "version": 2,
-  "name": "gbm-mock-api",
   "buildCommand": "pnpm build",
   "installCommand": "pnpm install",
   "outputDirectory": "dist",
-  "api": {
-    "runtime": "nodejs16.x"
+  "framework": null,
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "nodejs18.x"
+    }
   },
   "routes": [
     {
@@ -14,17 +16,17 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/api/$1"
+      "dest": "/api/index.js"
     }
   ],
   "env": {
     "NODE_ENV": "production",
     "PORT": "8000",
-    "CORS_ORIGINS": "@cors_origins"
+    "CORS_ORIGINS": "*"
   },
   "headers": [
     {
-      "source": "/api/(.*)",
+      "source": "/(.*)",
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",
@@ -36,7 +38,7 @@
         },
         {
           "key": "Access-Control-Allow-Headers",
-          "value": "X-Requested-With, Content-Type, Accept"
+          "value": "X-Requested-With, Content-Type, Accept, Authorization"
         }
       ]
     }
