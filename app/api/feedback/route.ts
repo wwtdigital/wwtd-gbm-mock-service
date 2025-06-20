@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createFeedback, getThread } from "../../../src/store";
+import { createFeedback, getThread } from "@/src/store";
 import {
   FeedbackRequestSchema,
-} from "../../../src/types";
+} from "@/src/types";
 import {
   addCorsHeaders,
   createErrorResponse,

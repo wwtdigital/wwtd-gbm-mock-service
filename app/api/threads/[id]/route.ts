@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getThread } from "../../../../src/store";
-import { formatThread } from "../../../../src/utils";
+import { getThread } from "@/src/store";
+import { formatThread } from "@/src/utils";
 import {
   addCorsHeaders,
   createErrorResponse,
   logRequest,
   handleDelay as delayResponse,
   checkForceError as forceError,
-} from "../../../../src/middleware-utils";
+} from "@/src/middleware-utils";
 
 export async function GET(
   request: NextRequest,
