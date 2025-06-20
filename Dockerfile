@@ -1,23 +1,26 @@
 # Use Node.js 22 Alpine for smaller image size
 FROM node:22-alpine
 
+# Install pnpm globally
+RUN npm install -g pnpm
+
 # Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy package files (no package-lock.json, using pnpm)
+COPY package.json pnpm-lock.yaml* ./
 
 # Install all dependencies (including dev dependencies for build)
-RUN npm ci
+RUN pnpm install --frozen-lockfile
 
 # Copy source code
 COPY . .
 
 # Build the Next.js application
-RUN npm run build
+RUN pnpm build
 
 # Remove dev dependencies to reduce image size
-RUN npm prune --omit=dev
+RUN pnpm prune --prod
 
 # Expose port 8000
 EXPOSE 8000
@@ -28,4 +31,4 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=8000
 
 # Start the Next.js application
-CMD ["npm", "start"]
+CMD ["pnpm", "start"]
