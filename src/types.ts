@@ -41,6 +41,17 @@ export const ThreadRequestSchema = z.object({
 });
 export type ThreadRequest = z.infer<typeof ThreadRequestSchema>;
 
+// User schemas
+export const UserSchema = z.object({
+  id: z.number().optional(),
+  userId: z.string(),
+  email: z.string().email(),
+  firstName: z.string(),
+  lastName: z.string(),
+  role: z.string(),
+});
+export type User = z.infer<typeof UserSchema>;
+
 // Feedback schemas
 export const FeedbackSchema = z.object({
   id: z.number().optional(),
@@ -63,3 +74,7 @@ export const FeedbackRequestSchema = z.object({
   comment: z.string().optional(),
 });
 export type FeedbackRequest = z.infer<typeof FeedbackRequestSchema>;
+
+// OpenAPI Item alias (role + content) to match spec
+export const ItemSchema = UniversalMessageSchema;
+export type Item = UniversalMessage;

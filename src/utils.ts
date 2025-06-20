@@ -1,4 +1,15 @@
 import type { Thread } from "./types";
+export function formatUser(user: import("./types").User) {
+  return {
+    id: user.id,
+    user_id: user.userId,
+    email: user.email,
+    first_name: user.firstName,
+    last_name: user.lastName,
+    role: user.role,
+  };
+}
+
 export function formatThread(thread: Thread) {
   return {
     id: thread.id,

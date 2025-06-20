@@ -1,15 +1,18 @@
 import { v4 as uuid } from "uuid";
-import type { Feedback, Thread } from "./types";
+import type { Feedback, Thread, User } from "./types";
 
 const threads = new Map<string, Thread>();
 const feedback = new Map<string, Feedback>();
+const users = new Map<string, User>();
 let nextThreadId = 1;
 let nextEntryId = 1;
 let nextFeedbackId = 1;
+let nextUserId = 1;
 
 export function clearStore() {
   threads.clear();
   feedback.clear();
+  users.clear();
 }
 
 export function createThread(
@@ -69,6 +72,26 @@ export function listThreads(): Thread[] {
 
 export function nextEntryIdValue() {
   return nextEntryId;
+}
+
+// User functions
+export function createUser(user: Omit<User, "id">): User {
+  const userId = nextUserId++;
+  const record: User = { id: userId, ...user };
+  users.set(user.userId, record);
+  return record;
+}
+
+export function getUser(userId: string): User | undefined {
+  return users.get(userId);
+}
+
+export function deleteUser(userId: string): boolean {
+  return users.delete(userId);
+}
+
+export function listUsers(): User[] {
+  return Array.from(users.values());
 }
 
 // Feedback functions
