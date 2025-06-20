@@ -348,6 +348,99 @@ export const openApiSpec = {
         },
       },
     },
+    "/api/threads/{threadId}/feedback/counts": {
+      get: {
+        tags: ["Feedback"],
+        summary: "Get feedback counts for thread",
+        description: "Get aggregated thumbs up/down counts for a specific thread",
+        parameters: [
+          {
+            name: "threadId",
+            in: "path",
+            description: "Thread ID",
+            required: true,
+            schema: {
+              type: "string",
+              format: "uuid",
+            },
+          },
+        ],
+        responses: {
+          "200": {
+            description: "Thread feedback counts",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    thread_id: {
+                      type: "string",
+                      format: "uuid",
+                      description: "Thread ID"
+                    },
+                    thumbs_up: {
+                      type: "integer",
+                      description: "Number of thumbs up feedback"
+                    },
+                    thumbs_down: {
+                      type: "integer",
+                      description: "Number of thumbs down feedback"
+                    },
+                    total: {
+                      type: "integer",
+                      description: "Total number of feedback entries"
+                    }
+                  }
+                },
+              },
+            },
+          },
+          "404": {
+            description: "Thread not found",
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/Error",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/api/feedback/counts": {
+      get: {
+        tags: ["Feedback"],
+        summary: "Get global feedback counts",
+        description: "Get aggregated thumbs up/down counts across all feedback",
+        responses: {
+          "200": {
+            description: "Global feedback counts",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    thumbs_up: {
+                      type: "integer",
+                      description: "Number of thumbs up feedback"
+                    },
+                    thumbs_down: {
+                      type: "integer",
+                      description: "Number of thumbs down feedback"
+                    },
+                    total: {
+                      type: "integer",
+                      description: "Total number of feedback entries"
+                    }
+                  }
+                },
+              },
+            },
+          },
+        },
+      },
+    },
     "/api/mock/config": {
       get: {
         tags: ["Mock"],
