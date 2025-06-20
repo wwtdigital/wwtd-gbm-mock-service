@@ -7,6 +7,7 @@ const nextConfig = {
   compress: true,
   poweredByHeader: false,
   generateEtags: true,
+  output: 'standalone',
   
   // Redirect root to API docs
   async redirects() {

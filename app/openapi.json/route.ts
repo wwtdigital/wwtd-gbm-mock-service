@@ -1,14 +1,13 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import { openApiSpec } from "@/src/openapi";
 
 export async function GET() {
   try {
-    const openApiPath = path.join(process.cwd(), "openapi.json");
-    const openApiContent = fs.readFileSync(openApiPath, "utf8");
-    const openApiSpec = JSON.parse(openApiContent);
-    
-    return NextResponse.json(openApiSpec);
+    return NextResponse.json(openApiSpec, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
   } catch (error) {
     console.error("Error loading OpenAPI spec:", error);
     return NextResponse.json(
