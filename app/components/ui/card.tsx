@@ -6,7 +6,7 @@ interface CardProps {
   className?: string;
 }
 
-export function Card({ title, children, className = "" }: CardProps) {
+export function Card({ title, children, className = "" }: CardProps): JSX.Element {
   return (
     <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>
       <h2 className="text-2xl font-semibold mb-4">{title}</h2>
@@ -21,7 +21,7 @@ interface CardGridProps {
   className?: string;
 }
 
-export function CardGrid({ children, columns = 2, className = "" }: CardGridProps) {
+export function CardGrid({ children, columns = 2, className = "" }: CardGridProps): JSX.Element {
   return (
     <div className={`grid md:grid-cols-${columns} gap-8 ${className}`}>
       {children}
@@ -35,7 +35,7 @@ interface EndpointItemProps {
   description: string;
 }
 
-export function EndpointItem({ method, path, description }: EndpointItemProps) {
+export function EndpointItem({ method, path, description }: EndpointItemProps): JSX.Element {
   const methodColors = {
     GET: "bg-green-100 text-green-800",
     POST: "bg-blue-100 text-blue-800",
@@ -59,7 +59,7 @@ interface FeatureItemProps {
   description: string;
 }
 
-export function FeatureItem({ title, description }: FeatureItemProps) {
+export function FeatureItem({ title, description }: FeatureItemProps): JSX.Element {
   return (
     <div className="text-center">
       <h3 className="font-semibold text-lg mb-2">{title}</h3>

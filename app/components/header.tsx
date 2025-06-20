@@ -3,7 +3,7 @@ interface HeaderProps {
   description?: string;
 }
 
-export function Header({ title, description }: HeaderProps) {
+export function Header({ title, description }: HeaderProps): JSX.Element {
   return (
     <div className="text-center mb-12">
       <h1 className="text-4xl font-bold mb-4">{title}</h1>

@@ -6,7 +6,7 @@ interface ConfigItemProps {
   }>;
 }
 
-export function ConfigSection({ title, items }: ConfigItemProps) {
+export function ConfigSection({ title, items }: ConfigItemProps): JSX.Element {
   return (
     <div>
       <h3 className="font-semibold mb-2">{title}</h3>

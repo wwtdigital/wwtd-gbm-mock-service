@@ -4,7 +4,7 @@ import { openApiSpec } from "@/src/openapi";
  * API Documentation page
  * This is a server component for better performance
  */
-export default function ApiDocs() {
+export default function ApiDocs(): JSX.Element {
   const { paths, components } = openApiSpec;
   const pathEntries = Object.entries(paths);
   

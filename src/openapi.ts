@@ -352,7 +352,8 @@ export const openApiSpec = {
       get: {
         tags: ["Feedback"],
         summary: "Get feedback counts for thread",
-        description: "Get aggregated thumbs up/down counts for a specific thread",
+        description:
+          "Get aggregated thumbs up/down counts for a specific thread",
         parameters: [
           {
             name: "threadId",
@@ -376,21 +377,21 @@ export const openApiSpec = {
                     thread_id: {
                       type: "string",
                       format: "uuid",
-                      description: "Thread ID"
+                      description: "Thread ID",
                     },
                     thumbs_up: {
                       type: "integer",
-                      description: "Number of thumbs up feedback"
+                      description: "Number of thumbs up feedback",
                     },
                     thumbs_down: {
                       type: "integer",
-                      description: "Number of thumbs down feedback"
+                      description: "Number of thumbs down feedback",
                     },
                     total: {
                       type: "integer",
-                      description: "Total number of feedback entries"
-                    }
-                  }
+                      description: "Total number of feedback entries",
+                    },
+                  },
                 },
               },
             },
@@ -423,17 +424,17 @@ export const openApiSpec = {
                   properties: {
                     thumbs_up: {
                       type: "integer",
-                      description: "Number of thumbs up feedback"
+                      description: "Number of thumbs up feedback",
                     },
                     thumbs_down: {
                       type: "integer",
-                      description: "Number of thumbs down feedback"
+                      description: "Number of thumbs down feedback",
                     },
                     total: {
                       type: "integer",
-                      description: "Total number of feedback entries"
-                    }
-                  }
+                      description: "Total number of feedback entries",
+                    },
+                  },
                 },
               },
             },

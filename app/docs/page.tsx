@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-export default function DocsPage() {
+export default function DocsPage(): JSX.Element {
   useEffect(() => {
     // Load Swagger UI from CDN
     const script = document.createElement("script");
