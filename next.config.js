@@ -8,6 +8,17 @@ const nextConfig = {
   poweredByHeader: false,
   generateEtags: true,
   
+  // Redirect root to API docs
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/api-docs',
+        permanent: false,
+      },
+    ];
+  },
+  
   // Security headers
   async headers() {
     return [
